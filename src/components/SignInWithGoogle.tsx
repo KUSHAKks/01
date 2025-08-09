@@ -1,10 +1,56 @@
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { toast } from "react-toastify";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { Chrome } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function SignInWithGoogle() {
+  const navigate = useNavigate();
+
+  // Handle redirect result when component mounts
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+          
+          // Check if user document exists, if not create it
+          const userDocRef = doc(db, "Users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (!userDoc.exists()) {
+            // Create user document with Google profile data
+            await setDoc(userDocRef, {
+              email: user.email,
+              firstName: user.displayName?.split(' ')[0] || '',
+              lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+              photo: user.photoURL || ''
+            });
+          }
+          
+          toast.success("Successfully signed in with Google!", {
+            position: "top-center",
+          });
+          
+          // Navigate to home page
+          navigate("/");
+        }
+      } catch (error: any) {
+        console.error("Google sign-in redirect error:", error);
+        if (error.code !== 'auth/cancelled-popup-request') {
+          toast.error(error.message || "Google sign-in failed. Please try again.", {
+            position: "bottom-center",
+          });
+        }
+      }
+    };
+
+    handleRedirectResult();
+  }, [navigate]);
+
   const googleLogin = async () => {
     const provider = new GoogleAuthProvider();
     

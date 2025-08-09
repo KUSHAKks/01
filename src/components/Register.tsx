@@ -59,15 +59,14 @@ function Register() {
           lastName: lastName,
           photo: ""
         });
-        
-        // Sign out the user immediately after registration
-        await auth.signOut();
       }
       
       toast.success("Account created successfully! Please sign in to continue.", {
         position: "top-center",
       });
-      navigate("/login");
+      
+      // Navigate to home page after successful registration
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Registration failed. Please try again.", {
         position: "bottom-center",
@@ -79,14 +78,16 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex items-center justify-center p-4">
-      <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
-        <button
-          className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center"
-          onClick={() => navigate("/")}
-          aria-label="Go home"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+      <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20 relative">
+        <div className="absolute top-4 left-4">
+          <button
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition-colors duration-200"
+            onClick={() => navigate("/")}
+            aria-label="Go home"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        </div>
         <div className="text-center mb-8">
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <UserPlus className="w-8 h-8 text-white" />
@@ -110,7 +111,7 @@ function Register() {
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900 placeholder-gray-500"
                   placeholder="First name"
                   required
                 />
@@ -128,7 +129,7 @@ function Register() {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900 placeholder-gray-500"
                   placeholder="Last name"
                 />
               </div>
@@ -146,7 +147,7 @@ function Register() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900 placeholder-gray-500"
                 placeholder="Enter your email"
                 required
               />
@@ -164,7 +165,7 @@ function Register() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={handlePasswordChange}
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900 placeholder-gray-500"
                 placeholder="Create a password"
                 required
               />
