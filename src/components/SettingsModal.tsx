@@ -73,9 +73,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       });
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error(error.message || 'Failed to update profile', {
-        position: 'bottom-center',
-      });
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error('Please sign out and sign back in to update your profile', {
+          position: 'bottom-center',
+        });
+      } else if (error.message?.includes('permissions')) {
+        toast.warning('Profile updated locally. Some changes may not be saved to the server.', {
+          position: 'bottom-center',
+        });
+        // Update local state even if Firestore fails
+        onUserDetailsUpdate({
+          ...userDetails,
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
+          email: profileData.email,
+        });
+      } else {
+        toast.error(error.message || 'Failed to update profile', {
+          position: 'bottom-center',
+        });
+      }
     } finally {
       setLoading(false);
     }

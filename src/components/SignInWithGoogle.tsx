@@ -17,18 +17,25 @@ function SignInWithGoogle() {
         if (result) {
           const user = result.user;
           
-          // Check if user document exists, if not create it
-          const userDocRef = doc(db, "Users", user.uid);
-          const userDoc = await getDoc(userDocRef);
-          
-          if (!userDoc.exists()) {
-            // Create user document with Google profile data
-            await setDoc(userDocRef, {
-              email: user.email,
-              firstName: user.displayName?.split(' ')[0] || '',
-              lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-              photo: user.photoURL || ''
-            });
+          // Try to save user data to Firestore, but don't fail if permissions are restricted
+          try {
+            const userDocRef = doc(db, "Users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            
+            if (!userDoc.exists()) {
+              // Create user document with Google profile data
+              await setDoc(userDocRef, {
+                email: user.email,
+                firstName: user.displayName?.split(' ')[0] || '',
+                lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+                photo: user.photoURL || '',
+                createdAt: new Date(),
+                updatedAt: new Date()
+              });
+            }
+          } catch (firestoreError: any) {
+            console.warn("Could not save user data to Firestore:", firestoreError.message);
+            // Continue with success message even if Firestore save fails
           }
           
           toast.success("Successfully signed in with Google!", {

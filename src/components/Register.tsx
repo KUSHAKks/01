@@ -52,13 +52,21 @@ function Register() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
+      // Try to save user data to Firestore, but don't fail if permissions are restricted
       if (user) {
-        await setDoc(doc(db, "Users", user.uid), {
-          email: user.email,
-          firstName: firstName,
-          lastName: lastName,
-          photo: ""
-        });
+        try {
+          await setDoc(doc(db, "Users", user.uid), {
+            email: user.email,
+            firstName: firstName,
+            lastName: lastName,
+            photo: "",
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        } catch (firestoreError: any) {
+          console.warn("Could not save user data to Firestore:", firestoreError.message);
+          // Continue with success message even if Firestore save fails
+        }
       }
       
       toast.success("Account created successfully! Please sign in to continue.", {
@@ -68,6 +76,7 @@ function Register() {
       // Navigate to home page after successful registration
       navigate("/");
     } catch (error: any) {
+      console.error("Registration error:", error);
       toast.error(error.message || "Registration failed. Please try again.", {
         position: "bottom-center",
       });

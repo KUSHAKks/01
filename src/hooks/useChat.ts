@@ -175,7 +175,8 @@ export const useChat = () => {
       const userDocRef = doc(db, 'Users', userId);
       await setDoc(userDocRef, preferences, { merge: true });
     } catch (error) {
-      console.error('Error saving user preferences:', error);
+      console.warn('Could not save user preferences to Firestore:', error);
+      // Don't throw error, just log warning
     }
   };
 

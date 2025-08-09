@@ -53,9 +53,24 @@ export const Header: React.FC<HeaderProps> = ({
           
           if (docSnap.exists()) {
             setUserDetails(docSnap.data() as UserDetails);
+          } else {
+            // If no Firestore document exists, use Firebase Auth data
+            setUserDetails({
+              email: currentUser.email || '',
+              firstName: currentUser.displayName?.split(' ')[0] || currentUser.email?.split('@')[0] || 'User',
+              lastName: currentUser.displayName?.split(' ').slice(1).join(' ') || '',
+              photo: currentUser.photoURL || ''
+            });
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.warn("Could not fetch user data from Firestore:", error);
+          // Fallback to Firebase Auth data
+          setUserDetails({
+            email: currentUser.email || '',
+            firstName: currentUser.displayName?.split(' ')[0] || currentUser.email?.split('@')[0] || 'User',
+            lastName: currentUser.displayName?.split(' ').slice(1).join(' ') || '',
+            photo: currentUser.photoURL || ''
+          });
         }
       } else {
         setUserDetails(null);
